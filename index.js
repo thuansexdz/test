@@ -2,18 +2,19 @@ const { spawn } = require("child_process");
 const logger = require("./utils/log");
 
 function startBot(message) {
-    // Add the custom ASCII art without gradient
-    const customAsciiArt = `
-░▒▓███████▓▒░░▒▓██████▓▒░▒▓████████▓▒░▒▓██████▓▒░░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
- ░▒▓██████▓▒░░▒▓████████▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░ 
-       ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
-       ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
-░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░   ░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░
+    // Logo Alyna bằng ASCII
+    const logo = `
+░█▀▄░█░█░█░█░█▄█░█▄█░▄▀▄░
+░█▀▄░█░█░█░█░█░█░█░█░█▀█░
+░▀▀░░▀▀▀░▀▀▀░▀░▀░▀░▀░▀░▀░ BOT
 `;
-    (message) ? logger(`${customAsciiArt}\n${message}`, "[ Bắt Đầu ]") : "";
 
+    if (message) {
+        logger(`${logo}\n${message}`, "[ Bắt Đầu ]");
+    } else {
+        logger(`${logo}\nKhởi động bot Alyna...`, "[ Bắt Đầu ]");
+    } else {
+        logger(`Admin xthuan `,"[  Admin ]");
     const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "main.js"], {
         cwd: __dirname,
         stdio: "inherit",
@@ -21,18 +22,27 @@ function startBot(message) {
     });
 
     child.on("close", async (codeExit) => {
-        var x = 'codeExit'.replace('codeExit', codeExit);
-        if (codeExit == 1) return startBot("Restarting...");
-        else if (x.indexOf(2) == 0) {
-            await new Promise(resolve => setTimeout(resolve, parseInt(x.replace(2, '')) * 1000));
-            startBot("Open ...");
+        logger(`Bot đã dừng với mã thoát: ${codeExit}`, "[ Dừng ]");
+
+        if (codeExit === 1) {
+            logger("Bot sẽ khởi động lại ngay...", "[ Tự Động Restart ]");
+            startBot("Đang khởi động lại...");
+        } else if (String(codeExit).startsWith("2")) {
+            const delaySeconds = parseInt(String(codeExit).slice(1));
+            if (!isNaN(delaySeconds)) {
+                logger(`Bot sẽ mở lại sau ${delaySeconds} giây...`, "[ Hẹn Giờ Mở Lại ]");
+                await new Promise(resolve => setTimeout(resolve, delaySeconds * 1000));
+                startBot("Mở lại sau chờ đợi...");
+             logger("Tự động  ${hours} giờ ${minutes} phút ${seconds}");
+            }
+        } else {
+            logger("Bot kết thúc không yêu cầu restart.", "[ Thoát ]");
         }
-        else return;
     });
 
-    child.on("error", function (error) {
-        logger("An error occurred: " + JSON.stringify(error), "[ Starting ]");
+    child.on("error", (error) => {
+        logger("Lỗi khi khởi động tiến trình bot: " + JSON.stringify(error), "[ Lỗi ]");
     });
 }
-
+        logger("đang chạy bot lyana vui lòng chờ");
 startBot();
