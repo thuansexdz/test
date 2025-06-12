@@ -170,7 +170,7 @@ module.exports.loader = (data, option) => {
         default:
             // Sử dụng một gradient mặc định đẹp mắt cho loader
             const loaderGradient = ['#00FFFF', '#007BFF', '#1E90FF'];
-            console.log(createRandomPrefixGradient('[ Yaneka ] ') + createGradientText(data, loaderGradient));
+            console.log(createRandomPrefixGradient('[ Lyana ] ') + createGradientText(data, loaderGradient));
             break;
     }
 }
